@@ -1,8 +1,12 @@
 import requests
 import json
+import os
+from dotenv import load_dotenv
 
 # --- CONFIGURATION ---
-API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjY4NDg2MTM4MywiYWFpIjoxMSwidWlkIjoxMTA0NzEzOTEsImlhZCI6IjIwMjYtMDctMjFUMDg6NDQ6MjIuNjYyWiIsInBlciI6Im1lOndyaXRlIiwiYWN0aWQiOjM2MTMxMzU5LCJyZ24iOiJhcHNlMiJ9.dBqrnfNNtzp4fAL16bU7fC8dCpZeHpO_j1AhBKVQOBI"
+load_dotenv()
+
+API_TOKEN = os.getenv("MONDAY_API_TOKEN", "").strip().strip('"').strip("'")
 DEALS_BOARD_ID = 5030093635  # Replace with your actual Deals Board ID
 WORK_ORDERS_BOARD_ID = 5030093942 # Replace with your actual Work Orders Board ID
 
@@ -15,6 +19,9 @@ URL = "https://api.monday.com/v2"
 
 def fetch_board_data(board_id):
     """Fetches the first 100 items from a given board to test the connection."""
+
+    if not API_TOKEN:
+        raise RuntimeError("MONDAY_API_TOKEN is not set. Check your .env file and ensure it is loaded.")
     
     # GraphQL query using items_page
     query = """
@@ -48,7 +55,11 @@ def fetch_board_data(board_id):
     response = requests.post(URL, json=payload, headers=HEADERS)
     
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+        if isinstance(data, dict) and data.get("errors"):
+            print("Monday API returned errors:")
+            print(json.dumps(data["errors"], indent=2))
+        return data
     else:
         return f"Error {response.status_code}: {response.text}"
 
