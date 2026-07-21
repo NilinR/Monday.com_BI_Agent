@@ -52,8 +52,44 @@ def fetch_board_data(board_id):
     else:
         return f"Error {response.status_code}: {response.text}"
 
+def clean_monday_data(raw_json):
+    """Flattens the deeply nested GraphQL JSON into a clean list of dictionaries."""
+    cleaned_items = []
+    
+    try:
+        # Navigate the standard monday.com GraphQL response structure
+        items = raw_json['data']['boards'][0]['items_page']['items']
+    except (KeyError, IndexError, TypeError):
+        print("Warning: Unexpected JSON structure or empty board.")
+        return []
+
+    for item in items:
+        # Start the dictionary with the primary item name
+        row_data = {"Item Name": item.get('name', 'Unknown')}
+        
+        # Flatten the dynamic column values
+        for col in item.get('column_values', []):
+            # Extract the actual column title and its text value
+            title = col['column']['title']
+            raw_text = col.get('text')
+            
+            # Data Resilience: Handle messy, missing, or null data gracefully
+            if raw_text is None or raw_text == "" or raw_text.lower() == "null":
+                row_data[title] = "Unknown" 
+            else:
+                row_data[title] = raw_text
+                
+        cleaned_items.append(row_data)
+        
+    return cleaned_items
+
 # --- RUN THE TEST ---
 if __name__ == "__main__":
-    print("Fetching Deals Data...\n")
-    deals_data = fetch_board_data(DEALS_BOARD_ID)
-    print(json.dumps(deals_data, indent=2))
+    print("Fetching raw Deals Data...\n")
+    raw_deals = fetch_board_data(DEALS_BOARD_ID)
+    
+    print("Cleaning Deals Data...\n")
+    cleaned_deals = clean_monday_data(raw_deals)
+    
+    # Print the first 2 cleaned items to verify the flattening worked
+    print(json.dumps(cleaned_deals[:2], indent=2))
