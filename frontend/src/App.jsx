@@ -26,7 +26,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await fetch(`https://monday-bi-bknd.vercel.app/`, {
+      const response = await fetch(`https://monday-bi-bknd.vercel.app${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
