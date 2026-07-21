@@ -2,7 +2,7 @@
 
 An AI-powered Business Intelligence agent that fetches real-time data from monday.com boards (Deals & Work Orders) and provides executive insights.
 
-**For Evaluators:** [Decision Log](DECISION_LOG.md) | [Submission ZIP](Skylark_BI_Agent_Submission.zip)
+**For Evaluation:** [Decision Log](DECISION_LOG.md) | [Submission ZIP](Skylark_BI_Agent_Submission.zip)
 
 **Live Demo:** [https://monday-bi-agent-beta.vercel.app/](https://monday-bi-agent-beta.vercel.app/)  
 **Source Code:** [https://github.com/NilinR/Monday.com_BI_Agent](https://github.com/NilinR/Monday.com_BI_Agent)
